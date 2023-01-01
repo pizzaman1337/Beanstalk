@@ -9,6 +9,7 @@ import {SafeMath} from "@openzeppelin/contracts/math/SafeMath.sol";
 import "../LibAppStorage.sol";
 import "../../C.sol";
 import "./LibUnripeSilo.sol";
+import "hardhat/console.sol";
 
 /**
  * @author Publius
@@ -20,7 +21,7 @@ library LibTokenSilo {
     event AddDeposit(
         address indexed account,
         address indexed token,
-        uint32 season,
+        int32 season, //int32 season,
         uint256 amount,
         uint256 bdv
     );
@@ -68,9 +69,10 @@ library LibTokenSilo {
         uint256 bdv
     ) internal {
         AppStorage storage s = LibAppStorage.diamondStorage();
-        s.a[account].deposits[token][_s].amount += uint128(amount);
-        s.a[account].deposits[token][_s].bdv += uint128(bdv);
-        emit AddDeposit(account, token, _s, amount, bdv);
+        s.a[account].deposits[token][int32(_s)].amount += uint128(amount);
+        s.a[account].deposits[token][int32(_s)].bdv += uint128(bdv);
+        console.log('hey yo going to emit the cool AddDeposit event with the new type');
+        emit AddDeposit(account, token, int32(_s), amount, bdv);
     }
 
     function decrementDepositedToken(address token, uint256 amount) internal {
@@ -93,26 +95,26 @@ library LibTokenSilo {
         AppStorage storage s = LibAppStorage.diamondStorage();
         uint256 crateAmount;
         (crateAmount, crateBDV) = (
-            s.a[account].deposits[token][id].amount,
-            s.a[account].deposits[token][id].bdv
+            s.a[account].deposits[token][int32(id)].amount,
+            s.a[account].deposits[token][int32(id)].bdv
         );
         if (amount < crateAmount) {
             uint256 base = amount.mul(crateBDV).div(crateAmount);
-            uint256 newBase = uint256(s.a[account].deposits[token][id].bdv).sub(
+            uint256 newBase = uint256(s.a[account].deposits[token][int32(id)].bdv).sub(
                 base
             );
-            uint256 newAmount = uint256(s.a[account].deposits[token][id].amount)
+            uint256 newAmount = uint256(s.a[account].deposits[token][int32(id)].amount)
                 .sub(amount);
             require(
                 newBase <= uint128(-1) && newAmount <= uint128(-1),
                 "Silo: uint128 overflow."
             );
-            s.a[account].deposits[token][id].amount = uint128(newAmount);
-            s.a[account].deposits[token][id].bdv = uint128(newBase);
+            s.a[account].deposits[token][int32(id)].amount = uint128(newAmount);
+            s.a[account].deposits[token][int32(id)].bdv = uint128(newBase);
             return base;
         }
 
-        if (crateAmount > 0) delete s.a[account].deposits[token][id];
+        if (crateAmount > 0) delete s.a[account].deposits[token][int32(id)];
 
         if (amount > crateAmount) {
             amount -= crateAmount;
@@ -149,8 +151,8 @@ library LibTokenSilo {
         if (LibUnripeSilo.isUnripeLP(token))
             return LibUnripeSilo.unripeLPDeposit(account, id);
         return (
-            s.a[account].deposits[token][id].amount,
-            s.a[account].deposits[token][id].bdv
+            s.a[account].deposits[token][int32(id)].amount,
+            s.a[account].deposits[token][int32(id)].bdv
         );
     }
 

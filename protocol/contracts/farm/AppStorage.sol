@@ -71,7 +71,7 @@ contract Account {
         SeasonOfPlenty deprecated; // DEPRECATED – Replant reset the Season of Plenty mechanism
         uint256 roots; // A Farmer's Root balance.
         uint256 wrappedBeans; // DEPRECATED – Replant generalized Internal Balances. Wrapped Beans are now stored at the AppStorage level.
-        mapping(address => mapping(uint32 => Deposit)) deposits; // A Farmer's Silo Deposits stored as a map from Token address to Season of Deposit to Deposit.
+        mapping(address => mapping(int32 => Deposit)) deposits; // A Farmer's Silo Deposits stored as a map from Token address to Season of Deposit to Deposit.
         mapping(address => mapping(uint32 => uint256)) withdrawals; // A Farmer's Withdrawals from the Silo stored as a map from Token address to Season the Withdrawal becomes Claimable to Withdrawn amount of Tokens.
         SeasonOfPlenty sop; // A Farmer's Season Of Plenty storage.
         mapping(address => mapping(address => uint256)) depositAllowances; // Spender => Silo Token

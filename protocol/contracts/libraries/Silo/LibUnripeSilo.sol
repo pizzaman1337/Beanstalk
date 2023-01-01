@@ -55,9 +55,9 @@ library LibUnripeSilo {
         AppStorage storage s = LibAppStorage.diamondStorage();
         uint256 legacyAmount = s.a[account].bean.deposits[season];
         amount = uint256(
-            s.a[account].deposits[C.unripeBeanAddress()][season].amount
+            s.a[account].deposits[C.unripeBeanAddress()][int32(season)].amount
         ).add(legacyAmount);
-        bdv = uint256(s.a[account].deposits[C.unripeBeanAddress()][season].bdv)
+        bdv = uint256(s.a[account].deposits[C.unripeBeanAddress()][int32(season)].bdv)
             .add(legacyAmount.mul(C.initialRecap()).div(1e18));
     }
 
@@ -101,32 +101,32 @@ library LibUnripeSilo {
         if (amount1 >= amount) {
             Account.Deposit storage d = s.a[account].deposits[
                 C.unripeLPPool1()
-            ][id];
+            ][int32(id)];
             uint128 removed = uint128(amount.mul(d.amount).div(amount1));
-            s.a[account].deposits[C.unripeLPPool1()][id].amount = d.amount.sub(
+            s.a[account].deposits[C.unripeLPPool1()][int32(id)].amount = d.amount.sub(
                 removed
             );
             removed = uint128(amount.mul(d.bdv).div(amount1));
-            s.a[account].deposits[C.unripeLPPool1()][id].bdv = d.bdv.sub(
+            s.a[account].deposits[C.unripeLPPool1()][int32(id)].bdv = d.bdv.sub(
                 removed
             );
             return bdv.add(removed);
         }
         amount -= amount1;
         bdv = bdv.add(bdv1);
-        delete s.a[account].deposits[C.unripeLPPool1()][id];
+        delete s.a[account].deposits[C.unripeLPPool1()][int32(id)];
 
         (amount1, bdv1) = getBeanLusdUnripeLP(account, id);
         if (amount1 >= amount) {
             Account.Deposit storage d = s.a[account].deposits[
                 C.unripeLPPool2()
-            ][id];
+            ][int32(id)];
             uint128 removed = uint128(amount.mul(d.amount).div(amount1));
-            s.a[account].deposits[C.unripeLPPool2()][id].amount = d.amount.sub(
+            s.a[account].deposits[C.unripeLPPool2()][int32(id)].amount = d.amount.sub(
                 removed
             );
             removed = uint128(amount.mul(d.bdv).div(amount1));
-            s.a[account].deposits[C.unripeLPPool2()][id].bdv = d.bdv.sub(
+            s.a[account].deposits[C.unripeLPPool2()][int32(id)].bdv = d.bdv.sub(
                 removed
             );
             return bdv.add(removed);
@@ -149,13 +149,13 @@ library LibUnripeSilo {
         (uint256 amount2, uint256 bdv2) = getBeanLusdUnripeLP(account, season);
 
         amount = uint256(
-            s.a[account].deposits[C.unripeLPAddress()][season].amount
+            s.a[account].deposits[C.unripeLPAddress()][int32(season)].amount
         ).add(amount.add(amount1).add(amount2));
 
         uint256 legBdv = bdv.add(bdv1).add(bdv2).mul(C.initialRecap()).div(
             C.precision()
         );
-        bdv = uint256(s.a[account].deposits[C.unripeLPAddress()][season].bdv)
+        bdv = uint256(s.a[account].deposits[C.unripeLPAddress()][int32(season)].bdv)
             .add(legBdv);
     }
 
@@ -180,9 +180,9 @@ library LibUnripeSilo {
         returns (uint256 amount, uint256 bdv)
     {
         AppStorage storage s = LibAppStorage.diamondStorage();
-        bdv = uint256(s.a[account].deposits[C.unripeLPPool2()][season].bdv);
+        bdv = uint256(s.a[account].deposits[C.unripeLPPool2()][int32(season)].bdv);
         amount = uint256(
-            s.a[account].deposits[C.unripeLPPool2()][season].amount
+            s.a[account].deposits[C.unripeLPPool2()][int32(season)].amount
         ).mul(AMOUNT_TO_BDV_BEAN_LUSD).div(C.precision());
     }
 
@@ -192,9 +192,9 @@ library LibUnripeSilo {
         returns (uint256 amount, uint256 bdv)
     {
         AppStorage storage s = LibAppStorage.diamondStorage();
-        bdv = uint256(s.a[account].deposits[C.unripeLPPool1()][season].bdv);
+        bdv = uint256(s.a[account].deposits[C.unripeLPPool1()][int32(season)].bdv);
         amount = uint256(
-            s.a[account].deposits[C.unripeLPPool1()][season].amount
+            s.a[account].deposits[C.unripeLPPool1()][int32(season)].amount
         ).mul(AMOUNT_TO_BDV_BEAN_3CRV).div(C.precision());
     }
 }

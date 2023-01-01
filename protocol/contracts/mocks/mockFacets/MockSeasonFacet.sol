@@ -159,7 +159,7 @@ contract MockSeasonFacet is SeasonFacet {
     function resetAccountToken(address account, address token) public {
         uint32 _s = season();
         for (uint32 j; j <= _s; ++j) {
-            if (s.a[account].deposits[token][j].amount > 0) delete s.a[account].deposits[token][j];
+            if (s.a[account].deposits[token][int32(j)].amount > 0) delete s.a[account].deposits[token][int32(j)];
             if (s.a[account].withdrawals[token][j+s.season.withdrawSeasons] > 0)
                 delete s.a[account].withdrawals[token][j+s.season.withdrawSeasons];
         }
